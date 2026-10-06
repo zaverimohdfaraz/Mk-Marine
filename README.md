@@ -191,8 +191,4 @@ pipework — sourced from Unsplash (free under the [Unsplash
 License](https://unsplash.com/license), no permission or payment needed).
 They're loaded directly from `images.unsplash.com` via plain `<img>` tags,
 so you'll need internet access when running `npm run dev` for them to
-load. Swap them for your own vessel/port/equipment photography whenever
-you have it — just replace the URLs in `app/page.tsx` and
-`app/marine-spare-parts/page.tsx`.
-#   M k - M a r i n e  
- 
+load. 

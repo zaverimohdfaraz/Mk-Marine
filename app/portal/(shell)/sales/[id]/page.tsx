@@ -4,12 +4,15 @@ import { Panel } from "@/components/ui/Panel";
 import { SaleStatusBadge, PaymentStatusBadge } from "@/components/ui/StatusBadge";
 import Button from "@/components/ui/Button";
 import ActivityTimeline from "@/components/ui/ActivityTimeline";
-import { getSale, getClient, getVessel, getProduct, lineTotal, activity } from "@/lib/demo-data";
+import { getSale, getClient, getVessel, getProduct, lineTotal, activity, getDocumentsFor } from "@/lib/demo-data";
+import { getCurrentUser } from "@/lib/current-user";
+import RecordDocuments from "@/components/portal/RecordDocuments";
 
 export default function SaleDetailPage({ params }: { params: { id: string } }) {
   const sale = getSale(params.id);
   if (!sale) return notFound();
 
+  const currentUser = getCurrentUser();
   const client = getClient(sale.clientId);
   const vessel = getVessel(sale.vesselId);
   const totalSelling = sale.items.reduce((sum, i) => sum + lineTotal(i.quantity, i.sellingPrice), 0);
@@ -85,6 +88,13 @@ export default function SaleDetailPage({ params }: { params: { id: string } }) {
               <Button fullWidth variant="ghost">Download Invoice</Button>
             </div>
           </Panel>
+          <RecordDocuments
+            relatedType="Sale"
+            relatedId={sale.id}
+            relatedLabel={sale.code}
+            initialDocuments={getDocumentsFor("Sale", sale.id)}
+            currentUser={currentUser}
+          />
         </div>
       </div>
     </div>

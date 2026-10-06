@@ -1,5 +1,6 @@
 import { Panel } from "@/components/ui/Panel";
 import Button from "@/components/ui/Button";
+import { auditLog } from "@/lib/demo-data";
 
 const USERS = [
   { name: "Mr. Kersi", email: "kersi@mkmarineservices.example", role: "Administrator", status: "Active" },
@@ -96,10 +97,33 @@ export default function SettingsPage() {
       </Panel>
 
       <Panel title="Audit Log">
-        <p className="text-[14px] text-ink-muted py-2">
-          Full change history (who changed what, previous and new values) will be
-          available here once the backend is connected — kept out of everyday
-          views per the spec so normal users aren't overwhelmed by audit detail.
+        <table className="w-full border-collapse text-[13.5px]">
+          <thead>
+            <tr>
+              {["When", "User", "Action", "Record", "Detail"].map((h) => (
+                <th key={h} className="text-left text-xs uppercase tracking-wide text-ink-faint font-bold border-b-[1.5px] border-border py-2.5 px-2">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {auditLog.map((a) => (
+              <tr key={a.id}>
+                <td className="py-3 px-2 border-b border-border-soft text-ink-muted whitespace-nowrap">{a.timestamp}</td>
+                <td className="py-3 px-2 border-b border-border-soft font-semibold text-navy whitespace-nowrap">{a.user}</td>
+                <td className="py-3 px-2 border-b border-border-soft whitespace-nowrap">
+                  <span className="bg-border-soft text-ink-muted text-[12px] font-semibold px-2.5 py-1 rounded">{a.action}</span>
+                </td>
+                <td className="py-3 px-2 border-b border-border-soft font-semibold text-navy whitespace-nowrap">{a.entityLabel}</td>
+                <td className="py-3 px-2 border-b border-border-soft text-ink-muted">{a.detail}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="text-[12.5px] text-ink-faint mt-3">
+          Every create, edit, note, payment and status change will be logged here
+          automatically once the backend is connected in Phase 3 — this is sample
+          data showing the intended format (who, what, when, and the before/after
+          detail).
         </p>
       </Panel>
     </div>

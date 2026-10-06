@@ -3,12 +3,15 @@ import Link from "next/link";
 import { Panel } from "@/components/ui/Panel";
 import Button from "@/components/ui/Button";
 import { PurchaseStatusBadge, PaymentStatusBadge } from "@/components/ui/StatusBadge";
-import { getPurchase, getSupplier, getProduct, lineTotal } from "@/lib/demo-data";
+import { getPurchase, getSupplier, getProduct, lineTotal, getDocumentsFor } from "@/lib/demo-data";
+import { getCurrentUser } from "@/lib/current-user";
+import RecordDocuments from "@/components/portal/RecordDocuments";
 
 export default function PurchaseDetailPage({ params }: { params: { id: string } }) {
   const purchase = getPurchase(params.id);
   if (!purchase) return notFound();
 
+  const currentUser = getCurrentUser();
   const supplier = getSupplier(purchase.supplierId);
   const total = purchase.items.reduce((sum, i) => sum + lineTotal(i.quantity, i.cost), 0);
 
@@ -76,6 +79,13 @@ export default function PurchaseDetailPage({ params }: { params: { id: string } 
               <Button fullWidth variant="ghost">Download Purchase Order</Button>
             </div>
           </Panel>
+          <RecordDocuments
+            relatedType="Purchase"
+            relatedId={purchase.id}
+            relatedLabel={purchase.code}
+            initialDocuments={getDocumentsFor("Purchase", purchase.id)}
+            currentUser={currentUser}
+          />
         </div>
       </div>
     </div>

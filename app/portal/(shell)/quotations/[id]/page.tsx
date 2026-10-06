@@ -12,12 +12,16 @@ import {
   getProduct,
   lineTotal,
   activity,
+  getDocumentsFor,
 } from "@/lib/demo-data";
+import { getCurrentUser } from "@/lib/current-user";
+import RecordDocuments from "@/components/portal/RecordDocuments";
 
 export default function QuotationDetailPage({ params }: { params: { id: string } }) {
   const quotation = getQuotation(params.id);
   if (!quotation) return notFound();
 
+  const currentUser = getCurrentUser();
   const client = getClient(quotation.clientId);
   const vessel = getVessel(quotation.vesselId);
   const total = quotation.items.reduce((sum, i) => sum + lineTotal(i.quantity, i.sellingPrice), 0);
@@ -133,6 +137,13 @@ export default function QuotationDetailPage({ params }: { params: { id: string }
               <Button fullWidth variant="ghost">Download PDF</Button>
             </div>
           </Panel>
+          <RecordDocuments
+            relatedType="Quotation"
+            relatedId={quotation.id}
+            relatedLabel={quotation.code}
+            initialDocuments={getDocumentsFor("Quotation", quotation.id)}
+            currentUser={currentUser}
+          />
         </div>
       </div>
     </div>

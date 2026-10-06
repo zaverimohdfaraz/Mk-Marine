@@ -3,6 +3,7 @@
 import { useState } from "react";
 import SiteHeader from "@/components/site/SiteHeader";
 import SiteFooter from "@/components/site/SiteFooter";
+import PublicPageExtras from "@/components/site/PublicPageExtras";
 import Button from "@/components/ui/Button";
 
 const STEPS = [
@@ -76,6 +77,10 @@ export default function RequestQuotePage() {
                   <label className="block font-semibold text-[14px] mb-1.5">Message</label>
                   <textarea rows={4} className="w-full px-3.5 py-3 border-[1.5px] border-border rounded-sm text-[15px]" />
                 </div>
+                <div>
+                  <label className="block font-semibold text-[14px] mb-1.5">Attachment (drawing, part photo, spec sheet)</label>
+                  <input type="file" className="w-full px-3.5 py-2.5 border-[1.5px] border-border rounded-sm text-[14px] bg-white" />
+                </div>
                 <Button type="submit" fullWidth>Request a Quote</Button>
               </form>
             )}
@@ -101,6 +106,7 @@ export default function RequestQuotePage() {
       </div>
 
       <SiteFooter />
+      <PublicPageExtras />
     </div>
   );
 }

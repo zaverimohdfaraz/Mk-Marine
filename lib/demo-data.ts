@@ -1,15 +1,22 @@
 import {
   ActivityEvent,
+  AuditLogEntry,
+  BusinessDocument,
   Client,
   Enquiry,
+  Expense,
   InternalNote,
   MarineProduct,
   Payment,
   Purchase,
   Quotation,
+  RecordType,
+  Reminder,
+  ReminderStatus,
   Sale,
   Supplier,
   Task,
+  UserName,
   Vessel,
 } from "./types";
 
@@ -228,10 +235,54 @@ export const activity: ActivityEvent[] = [
 ];
 
 export const tasks: Task[] = [
-  { id: "t1", title: "Follow up with Oceanic Shipping", assignedTo: "Mr. Patel", dueLabel: "Tomorrow", priority: "Important", status: "Pending", relatedLabel: "ENQ-1024" },
-  { id: "t2", title: "Confirm freight cost — MV Sea Horizon", assignedTo: "Mr. Kersi", dueLabel: "Today", priority: "Urgent", status: "Pending", relatedLabel: "ENQ-1025" },
-  { id: "t3", title: "Send revised pricing to Blue Horizon", assignedTo: "Mr. Patel", dueLabel: "Yesterday", priority: "Normal", status: "Completed", relatedLabel: "ENQ-1026" },
+  { id: "t1", title: "Follow up with Oceanic Shipping", assignedTo: "Mr. Patel", dueLabel: "Tomorrow", reminder: true, priority: "Important", status: "Pending", relatedLabel: "ENQ-1024" },
+  { id: "t2", title: "Confirm freight cost — MV Sea Horizon", assignedTo: "Mr. Kersi", dueLabel: "Today", reminder: true, priority: "Urgent", status: "Pending", relatedLabel: "ENQ-1025" },
+  { id: "t3", title: "Send revised pricing to Blue Horizon", assignedTo: "Mr. Patel", dueLabel: "Yesterday", reminder: false, priority: "Normal", status: "Completed", relatedLabel: "ENQ-1026" },
+  { id: "t4", title: "Chase Harbor Engineering for dispatch confirmation", assignedTo: "Mr. Kersi", dueLabel: "In 2 days", reminder: true, priority: "Important", status: "Pending", relatedLabel: "PO-2201" },
+  { id: "t5", title: "Reconcile September supplier payments", assignedTo: "Mr. Patel", dueLabel: "This Friday", reminder: false, priority: "Normal", status: "In Progress", relatedLabel: "Payments" },
 ];
+
+export const documents: BusinessDocument[] = [
+  { id: "doc-1", name: "Q-1024-draft.pdf", category: "Quotation", relatedType: "Quotation", relatedId: "q-1024", relatedLabel: "Q-1024", uploadedBy: "Mr. Patel", uploadedAt: "Today · 10:32 AM", sizeLabel: "214 KB" },
+  { id: "doc-2", name: "Q-1025-sent.pdf", category: "Quotation", relatedType: "Quotation", relatedId: "q-1025", relatedLabel: "Q-1025", uploadedBy: "Mr. Kersi", uploadedAt: "Today · 12:20 PM", sizeLabel: "198 KB" },
+  { id: "doc-3", name: "PO-2201-supplier-confirmation.pdf", category: "Purchase Order", relatedType: "Purchase", relatedId: "po-2201", relatedLabel: "PO-2201", uploadedBy: "Mr. Patel", uploadedAt: "Yesterday · 5:40 PM", sizeLabel: "310 KB" },
+  { id: "doc-4", name: "SALE-0498-invoice.pdf", category: "Invoice", relatedType: "Sale", relatedId: "sale-0498", relatedLabel: "SALE-0498", uploadedBy: "Mr. Kersi", uploadedAt: "3 days ago", sizeLabel: "156 KB" },
+  { id: "doc-5", name: "SALE-0498-delivery-note.pdf", category: "Delivery Note", relatedType: "Sale", relatedId: "sale-0498", relatedLabel: "SALE-0498", uploadedBy: "Mr. Kersi", uploadedAt: "3 days ago", sizeLabel: "88 KB" },
+  { id: "doc-6", name: "ENQ-1024-client-requirement.pdf", category: "Other", relatedType: "Enquiry", relatedId: "enq-1024", relatedLabel: "ENQ-1024", uploadedBy: "Mr. Patel", uploadedAt: "Today · 9:00 AM", sizeLabel: "402 KB" },
+];
+
+export const expenses: Expense[] = [
+  { id: "exp-1", category: "Office Rent", description: "Monthly office rent", amount: 28000, date: "1st of this month", paidBy: "Mr. Kersi" },
+  { id: "exp-2", category: "Utilities", description: "Electricity & internet", amount: 4200, date: "5 days ago", paidBy: "Mr. Patel" },
+  { id: "exp-3", category: "Travel & Fuel", description: "Port visit — Mumbai", amount: 2150, date: "Yesterday", paidBy: "Mr. Kersi" },
+  { id: "exp-4", category: "Courier & Logistics", description: "Document courier to client", amount: 650, date: "3 days ago", paidBy: "Mr. Patel" },
+  { id: "exp-5", category: "Bank Charges", description: "Wire transfer charges", amount: 480, date: "This week", paidBy: "Mr. Kersi" },
+];
+
+export const auditLog: AuditLogEntry[] = [
+  { id: "al-1", user: "Mr. Patel", action: "Created", entityLabel: "Q-1024", detail: "New draft quotation created for Oceanic Shipping", timestamp: "Today · 10:32 AM" },
+  { id: "al-2", user: "Mr. Kersi", action: "Updated", entityLabel: "ENQ-1025", detail: "Status changed from New → Quotation Sent", timestamp: "Today · 12:18 PM" },
+  { id: "al-3", user: "Mr. Kersi", action: "Added Note", entityLabel: "ENQ-1024", detail: "\"Do not send the quotation yet — still waiting on freight cost\"", timestamp: "Today · 9:05 AM" },
+  { id: "al-4", user: "Mr. Patel", action: "Recorded Payment", entityLabel: "SALE-0511", detail: "₹25,000 received via Bank Transfer (UTR-88213)", timestamp: "Today" },
+  { id: "al-5", user: "Mr. Patel", action: "Created", entityLabel: "PO-2201", detail: "Purchase order created against Harbor Engineering Supplies", timestamp: "Yesterday" },
+  { id: "al-6", user: "Mr. Patel", action: "Updated", entityLabel: "Q-0998", detail: "Status changed from Sent → Accepted", timestamp: "Yesterday · 5:10 PM" },
+  { id: "al-7", user: "Mr. Kersi", action: "Uploaded Document", entityLabel: "SALE-0498", detail: "SALE-0498-invoice.pdf added", timestamp: "3 days ago" },
+  { id: "al-8", user: "Mr. Kersi", action: "Completed", entityLabel: "SALE-0498", detail: "Sale marked as Completed, payment status Paid", timestamp: "3 days ago" },
+];
+
+export function getDocumentsFor(relatedType: RecordType, relatedId: string): BusinessDocument[] {
+  return documents.filter((d) => d.relatedType === relatedType && d.relatedId === relatedId);
+}
+
+export function getUserActivityCounts(user: UserName) {
+  return {
+    enquiries: enquiries.filter((e) => e.assignedTo === user).length,
+    quotations: quotations.filter((q) => q.createdBy === user).length,
+    tasksCompleted: tasks.filter((t) => t.assignedTo === user && t.status === "Completed").length,
+    notesAdded: internalNotes.filter((n) => n.createdBy === user).length,
+    paymentsRecorded: auditLog.filter((a) => a.user === user && a.action === "Recorded Payment").length,
+  };
+}
 
 export const suppliers: Supplier[] = [
   {
@@ -511,4 +562,78 @@ export function getEnquiry(id: string): Enquiry | undefined {
 
 export function getVesselsForClient(clientId: string): Vessel[] {
   return vessels.filter((v) => v.clientId === clientId);
+}
+
+function daysFromNow(offset: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d.toISOString().slice(0, 10);
+}
+
+export const reminders: Reminder[] = [
+  {
+    id: "rem-1",
+    title: "Follow up with Oceanic Shipping on Q-1024 pricing",
+    dueDate: daysFromNow(-2),
+    completed: false,
+    createdBy: "Mr. Patel",
+    notes: "Client asked for revised freight cost before confirming.",
+    relatedLabel: "Q-1024",
+  },
+  {
+    id: "rem-2",
+    title: "Confirm delivery schedule for SALE-0511",
+    dueDate: daysFromNow(0),
+    completed: false,
+    createdBy: "Mr. Kersi",
+    relatedLabel: "SALE-0511",
+  },
+  {
+    id: "rem-3",
+    title: "Send quotation follow-up to Seastar Marine Logistics",
+    dueDate: daysFromNow(2),
+    completed: false,
+    createdBy: "Mr. Kersi",
+    relatedLabel: "Q-1025",
+  },
+  {
+    id: "rem-4",
+    title: "Check supplier stock for hydraulic motor",
+    dueDate: daysFromNow(5),
+    completed: false,
+    createdBy: "Mr. Patel",
+  },
+  {
+    id: "rem-5",
+    title: "Renew annual maintenance contract reminder",
+    dueDate: daysFromNow(12),
+    completed: false,
+    createdBy: "Mr. Patel",
+  },
+  {
+    id: "rem-6",
+    title: "Follow up on PO-2189 payment",
+    dueDate: daysFromNow(-6),
+    completed: true,
+    createdBy: "Mr. Kersi",
+    relatedLabel: "PO-2189",
+  },
+];
+
+export function reminderStatus(r: Reminder): ReminderStatus {
+  if (r.completed) return "Completed";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = new Date(r.dueDate);
+  due.setHours(0, 0, 0, 0);
+  const diffDays = Math.round((due.getTime() - today.getTime()) / 86400000);
+  if (diffDays < 0) return "Due";
+  if (diffDays <= 7) return "Upcoming";
+  return "Scheduled";
+}
+
+export function getActiveReminders(all: Reminder[] = reminders): Reminder[] {
+  return all
+    .filter((r) => !r.completed && reminderStatus(r) !== "Scheduled")
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
 }

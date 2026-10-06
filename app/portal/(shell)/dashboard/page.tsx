@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Panel } from "@/components/ui/Panel";
 import ActivityTimeline from "@/components/ui/ActivityTimeline";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { StatusBadge, ReminderStatusBadge } from "@/components/ui/StatusBadge";
 import {
   Mail,
   Building2,
@@ -9,10 +9,15 @@ import {
   ListChecks,
   StickyNote,
   FileText,
+  BellRing,
 } from "lucide-react";
-import { activity, clients, enquiries, internalNotes, tasks, quotations, getClient, getVessel, getEnquiry } from "@/lib/demo-data";
+import { activity, clients, enquiries, internalNotes, tasks, quotations, getClient, getVessel, getEnquiry, getQuotation, getSale, getPurchase, getActiveReminders, reminderStatus } from "@/lib/demo-data";
 import { QuotationStatusBadge } from "@/components/ui/StatusBadge";
 import { getCurrentUser } from "@/lib/current-user";
+
+function formatDueDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+}
 
 export default function DashboardPage() {
   const user = getCurrentUser();
@@ -21,6 +26,8 @@ export default function DashboardPage() {
   const activeEnquiries = enquiries.filter((e) => e.status !== "Completed" && e.status !== "Lost");
   const pendingQuotations = quotations.filter((q) => q.status === "Draft" || q.status === "Sent");
   const receivable = clients.reduce((sum, c) => sum + c.outstandingAmount, 0);
+  const activeReminders = getActiveReminders();
+  const hasDue = activeReminders.some((r) => reminderStatus(r) === "Due");
 
   return (
     <div>
@@ -31,12 +38,45 @@ export default function DashboardPage() {
         <p className="text-ink-muted text-[15px]">Here's what needs your attention today.</p>
       </div>
 
+      {activeReminders.length > 0 && (
+        <div className={`rounded-md p-5 mb-6 border-l-4 ${hasDue ? "bg-danger-bg border-danger" : "bg-gold-soft border-gold"}`}>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold text-navy text-[15px] flex items-center gap-2">
+              <BellRing size={18} className={hasDue ? "text-danger" : "text-warn"} />
+              Reminders
+            </h2>
+            <Link href="/portal/reminders" className="text-ocean text-[13px] font-semibold">View all &rarr;</Link>
+          </div>
+          {activeReminders.slice(0, 4).map((r) => (
+            <div key={r.id} className="flex items-center justify-between py-2 border-b border-black/5 last:border-b-0 gap-3">
+              <span className="text-[14px] text-ink">{r.title}</span>
+              <div className="flex items-center gap-2.5 flex-shrink-0">
+                <span className="text-xs text-ink-faint whitespace-nowrap">Due {formatDueDate(r.dueDate)}</span>
+                <ReminderStatusBadge status={reminderStatus(r)} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       <Panel title="Important for You" count={unread.length}>
         {unread.map((note) => {
           const relatedEnquiry = note.relatedEnquiryId ? getEnquiry(note.relatedEnquiryId) : undefined;
+          const relatedQuotation = note.relatedQuotationId ? getQuotation(note.relatedQuotationId) : undefined;
+          const relatedSale = note.relatedSaleId ? getSale(note.relatedSaleId) : undefined;
+          const relatedPurchase = note.relatedPurchaseId ? getPurchase(note.relatedPurchaseId) : undefined;
+          const regarding = relatedEnquiry
+            ? { href: `/portal/enquiries/${relatedEnquiry.id}`, label: `Regarding: ${relatedEnquiry.code} — ${relatedEnquiry.requirementTitle}` }
+            : relatedQuotation
+            ? { href: `/portal/quotations/${relatedQuotation.id}`, label: `Regarding: ${relatedQuotation.code}` }
+            : relatedSale
+            ? { href: `/portal/sales/${relatedSale.id}`, label: `Regarding: ${relatedSale.code}` }
+            : relatedPurchase
+            ? { href: `/portal/purchases/${relatedPurchase.id}`, label: `Regarding: ${relatedPurchase.code}` }
+            : undefined;
           return (
             <Link
-              href={relatedEnquiry ? `/portal/enquiries/${relatedEnquiry.id}` : "/portal/important-notes"}
+              href={regarding ? regarding.href : "/portal/important-notes"}
               key={note.id}
               className="flex gap-3.5 py-3.5 border-b border-border-soft last:border-b-0 items-start"
             >
@@ -47,9 +87,9 @@ export default function DashboardPage() {
                 <p className="text-[14.5px] text-ink m-0 mb-1">
                   <b className="text-navy">{note.createdBy}</b> {note.message}
                 </p>
-                {relatedEnquiry && (
+                {regarding && (
                   <span className="inline-flex items-center gap-1 bg-ocean-light text-ocean-hover text-[11.5px] font-semibold px-2 py-0.5 rounded mb-1">
-                    Regarding: {relatedEnquiry.code} — {relatedEnquiry.requirementTitle}
+                    {regarding.label}
                   </span>
                 )}
                 <div className="text-[12.5px] text-ink-faint">{note.createdAt}</div>
@@ -171,6 +211,10 @@ export default function DashboardPage() {
           <Link href="/portal/important-notes" className="border-[1.5px] border-border rounded-md p-5 flex flex-col gap-2 font-semibold text-navy text-[14.5px] hover:border-ocean hover:bg-ocean-light">
             <StickyNote size={20} />
             Add Internal Note
+          </Link>
+          <Link href="/portal/reminders" className="border-[1.5px] border-border rounded-md p-5 flex flex-col gap-2 font-semibold text-navy text-[14.5px] hover:border-ocean hover:bg-ocean-light">
+            <BellRing size={20} />
+            New Reminder
           </Link>
           <Link href="/portal/quotations" className="border-[1.5px] border-border rounded-md p-5 flex flex-col gap-2 font-semibold text-navy text-[14.5px] hover:border-ocean hover:bg-ocean-light">
             <FileText size={20} />

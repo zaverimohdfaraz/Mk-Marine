@@ -80,6 +80,9 @@ export interface InternalNote {
   relatedClientId?: string;
   relatedVesselId?: string;
   relatedEnquiryId?: string;
+  relatedQuotationId?: string;
+  relatedSaleId?: string;
+  relatedPurchaseId?: string;
   read: boolean;
   resolved: boolean;
   createdAt: string;
@@ -98,9 +101,44 @@ export interface Task {
   title: string;
   assignedTo: UserName;
   dueLabel: string;
+  reminder: boolean;
   priority: Priority;
   status: "Pending" | "In Progress" | "Completed" | "Cancelled";
   relatedLabel?: string;
+}
+
+export type DocumentCategory = "Quotation" | "Invoice" | "Purchase Order" | "Delivery Note" | "Other";
+export type RecordType = "Enquiry" | "Quotation" | "Sale" | "Purchase" | "Client";
+
+export interface BusinessDocument {
+  id: string;
+  name: string;
+  category: DocumentCategory;
+  relatedType: RecordType;
+  relatedId: string;
+  relatedLabel: string;
+  uploadedBy: UserName;
+  uploadedAt: string;
+  sizeLabel: string;
+}
+
+export interface Expense {
+  id: string;
+  category: string;
+  description: string;
+  amount: number;
+  date: string;
+  paidBy: UserName;
+  notes?: string;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  user: UserName;
+  action: string;
+  entityLabel: string;
+  detail: string;
+  timestamp: string;
 }
 
 export type QuotationStatus = "Draft" | "Sent" | "Accepted" | "Rejected" | "Expired";
@@ -195,4 +233,16 @@ export interface Supplier {
   phone: string;
   productIds: string[];
   notes: string;
+}
+
+export type ReminderStatus = "Due" | "Upcoming" | "Scheduled" | "Completed";
+
+export interface Reminder {
+  id: string;
+  title: string;
+  dueDate: string; // YYYY-MM-DD
+  notes?: string;
+  relatedLabel?: string;
+  completed: boolean;
+  createdBy: UserName;
 }

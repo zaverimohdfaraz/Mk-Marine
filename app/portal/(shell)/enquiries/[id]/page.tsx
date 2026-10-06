@@ -13,12 +13,16 @@ import {
   internalNotes,
   activity,
   getQuotationByEnquiry,
+  getDocumentsFor,
 } from "@/lib/demo-data";
+import { getCurrentUser } from "@/lib/current-user";
+import RecordDocuments from "@/components/portal/RecordDocuments";
 
 export default function EnquiryDetailPage({ params }: { params: { id: string } }) {
   const enquiry = getEnquiry(params.id);
   if (!enquiry) return notFound();
 
+  const currentUser = getCurrentUser();
   const client = getClient(enquiry.clientId);
   const vessel = getVessel(enquiry.vesselId);
   const notes = internalNotes.filter((n) => n.relatedEnquiryId === enquiry.id);
@@ -153,6 +157,13 @@ export default function EnquiryDetailPage({ params }: { params: { id: string } }
               );
             })()}
           </Panel>
+          <RecordDocuments
+            relatedType="Enquiry"
+            relatedId={enquiry.id}
+            relatedLabel={enquiry.code}
+            initialDocuments={getDocumentsFor("Enquiry", enquiry.id)}
+            currentUser={currentUser}
+          />
         </div>
       </div>
     </div>

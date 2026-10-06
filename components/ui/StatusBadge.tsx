@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { EnquiryStatus, Priority, QuotationStatus, SaleStatus, PurchaseStatus, PaymentStatus } from "@/lib/types";
+import { EnquiryStatus, Priority, QuotationStatus, SaleStatus, PurchaseStatus, PaymentStatus, ReminderStatus } from "@/lib/types";
 
 const statusStyles: Record<EnquiryStatus, string> = {
   New: "bg-ocean-light text-ocean-hover",
@@ -128,4 +128,14 @@ const paymentTone: Record<PaymentStatus, Tone> = {
 };
 export function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
   return <Pill label={status} tone={paymentTone[status]} />;
+}
+
+const reminderTone: Record<ReminderStatus, Tone> = {
+  Due: "red",
+  Upcoming: "gold",
+  Scheduled: "gray",
+  Completed: "green",
+};
+export function ReminderStatusBadge({ status }: { status: ReminderStatus }) {
+  return <Pill label={status} tone={reminderTone[status]} />;
 }
